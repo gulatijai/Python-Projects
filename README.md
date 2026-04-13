@@ -1,13 +1,12 @@
 # 100 Days of Code - Python Projects
 
-A collection of Python projects built during the 100 Days of Code course by Dr. Angela Yu.
 Each project covers different aspects of Python development — from command line scripts
 to full stack web applications.
 
 ---
 
 ## 👨‍💻 About Me
-**Jai Gulati** — Mechanical Engineer & Technical Solutions Advisor at Laminex Australia.
+**Jai Gulati** — Mechanical Engineer & Technical Solutions Advisor.
 Building skills at the intersection of engineering, software development, and AI tools.
 
 - 🌐 Melbourne, Australia
