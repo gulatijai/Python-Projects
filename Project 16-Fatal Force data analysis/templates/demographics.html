@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Demographics Analysis{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-2">Demographics Analysis</h2>
+        <p class="text-center text-muted mb-5">Age, gender and behaviour breakdown of victims</p>
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <h4 class="fw-bold mb-3">Age Distribution</h4>
+            <div id="age_chart"></div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 p-4">
+                    <h4 class="fw-bold mb-3">Gender Breakdown</h4>
+                    <div id="gender_chart"></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 p-4">
+                    <h4 class="fw-bold mb-3">Flee Status</h4>
+                    <div id="flee_chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    var age_data = {{ age_chart | safe }};
+    Plotly.newPlot('age_chart', age_data.data, age_data.layout);
+
+    var gender_data = {{ gender_chart | safe }};
+    Plotly.newPlot('gender_chart', gender_data.data, gender_data.layout);
+
+    var flee_data = {{ flee_chart | safe }};
+    Plotly.newPlot('flee_chart', flee_data.data, flee_data.layout);
+</script>
+{% endblock %}

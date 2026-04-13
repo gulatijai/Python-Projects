@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - {{ query }}{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="fw-bold mb-4">Results for: "{{ query }}"</h2>
+
+        {% if meals %}
+        <div class="row g-4">
+            {% for meal in meals %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a href="/meal/{{ meal.idMeal }}" class="text-decoration-none">
+                    <div class="card bg-secondary h-100 meal-card">
+                        <img src="{{ meal.strMealThumb }}" class="card-img-top" style="height:180px; object-fit:cover;">
+                        <div class="card-body">
+                            <h6 class="card-title fw-bold text-white">{{ meal.strMeal }}</h6>
+                            <p class="small text-muted">{{ meal.strCategory }} | {{ meal.strArea }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="text-center py-5">
+            <h4 class="text-muted">No meals found for "{{ query }}"</h4>
+            <a href="/" class="btn btn-warning mt-3">Go Home</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Police Shootings Analysis{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-2">US Fatal Police Shootings</h2>
+        <p class="text-center text-muted mb-5">
+            Analysis of Washington Post database — Jan 2015 onwards
+        </p>
+
+        <!-- Key Stats -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="card shadow-sm text-center p-4 border-0">
+                    <h2 class="fw-bold text-danger">{{ total }}</h2>
+                    <p class="text-muted mb-0">Total Fatal Shootings</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card shadow-sm text-center p-4 border-0">
+                    <h2 class="fw-bold text-warning">{{ unarmed }}</h2>
+                    <p class="text-muted mb-0">Unarmed Victims</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card shadow-sm text-center p-4 border-0">
+                    <h2 class="fw-bold text-info">{{ mental_illness }}</h2>
+                    <p class="text-muted mb-0">Mental Illness Involved</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card shadow-sm text-center p-4 border-0">
+                    <h2 class="fw-bold text-success">{{ body_cam }}</h2>
+                    <p class="text-muted mb-0">Body Camera On</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Race Chart -->
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <h4 class="fw-bold mb-3">Fatal Shootings by Race</h4>
+            <div id="race_chart"></div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    var race_data = {{ race_chart | safe }};
+    Plotly.newPlot('race_chart', race_data.data, race_data.layout);
+</script>
+{% endblock %}

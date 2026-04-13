@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-5">All Cafes</h2>
+        <div class="row g-4">
+            {% for cafe in cafes %}
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ cafe.img_url }}" class="card-img-top" alt="{{ cafe.name }}" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ cafe.name }}</h5>
+                        <p class="card-text">📍 {{ cafe.location }}</p>
+                        <p class="card-text">☕ {{ cafe.coffee_price }}</p>
+                        <p class="card-text">📶 Wifi: {{ "Yes" if cafe.has_wifi else "No" }}</p>
+                        <p class="card-text">💺 Seats: {{ cafe.seats }}</p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <a href="{{ cafe.map_url }}" target="_blank" class="btn btn-outline-dark btn-sm">📍 Map</a>
+                        <a href="/update_price/{{ cafe.id }}" class="btn btn-outline-warning btn-sm">✏️ Update Price</a>
+                        <a href="/delete/{{ cafe.id }}" class="btn btn-outline-danger btn-sm">🗑 Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

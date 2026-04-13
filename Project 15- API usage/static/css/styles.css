@@ -1,0 +1,31 @@
+body {
+    background-color: #1a1a2e;
+}
+
+.meal-card {
+    transition: transform 0.2s;
+    border: none;
+    border-radius: 12px;
+}
+
+.meal-card:hover {
+    transform: translateY(-5px);
+}
+
+.category-card {
+    transition: transform 0.2s;
+    border: none;
+    border-radius: 8px;
+}
+
+.category-card:hover {
+    transform: translateY(-3px);
+}
+
+.navbar-brand {
+    font-size: 1.4rem;
+}
+
+.dropdown-item:hover {
+    background-color: #333;
+}

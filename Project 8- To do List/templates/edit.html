@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block title %}Edit Task{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <h2 class="fw-bold text-center mb-4">✏️ Edit Task</h2>
+                <div class="card shadow-sm p-4">
+                    <div class="mb-3 text-center">
+                        <span class="badge
+                            {% if task.priority == 'High' %}bg-danger
+                            {% elif task.priority == 'Medium' %}bg-warning
+                            {% else %}bg-success{% endif %}">
+                            ⚡ {{ task.priority }} Priority
+                        </span>
+                        <span class="badge bg-secondary ms-2">🏷️ {{ task.category }}</span>
+                        <span class="badge bg-primary ms-2">📌 {{ task.status }}</span>
+                    </div>
+                    {{ render_form(form, action="/edit/" + task.id|string) }}
+                    <div class="text-center mt-3">
+                        <a href="/" class="btn btn-outline-dark">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Kanban Board{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h2 class="fw-bold text-center mb-4">📋 Kanban Board</h2>
+    <div class="row g-4">
+
+        <!-- Todo Column -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white fw-bold">
+                    📌 To Do <span class="badge bg-white text-danger ms-2">{{ todo|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% for task in todo %}
+                    <div class="card mb-3 border-start border-4
+                        {% if task.priority == 'High' %}border-danger
+                        {% elif task.priority == 'Medium' %}border-warning
+                        {% else %}border-success{% endif %}">
+                        <div class="card-body p-2">
+                            <h6 class="fw-bold mb-1">{{ task.title }}</h6>
+                            <p class="text-muted small mb-1">{{ task.description }}</p>
+                            <p class="small mb-1">📅 {{ task.due_date }}</p>
+                            <p class="small mb-2">🏷️ {{ task.category }} | ⚡ {{ task.priority }}</p>
+                            <div class="d-flex gap-1 flex-wrap">
+                                <a href="/move/{{ task.id }}/forward" class="btn btn-sm btn-outline-primary">▶ Move</a>
+                                <a href="/edit/{{ task.id }}" class="btn btn-sm btn-outline-secondary">✏️ Edit</a>
+                                <a href="/delete/{{ task.id }}" class="btn btn-sm btn-outline-danger">🗑</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No tasks yet</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- In Progress Column -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark fw-bold">
+                    🔄 In Progress <span class="badge bg-white text-warning ms-2">{{ in_progress|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% for task in in_progress %}
+                    <div class="card mb-3 border-start border-4
+                        {% if task.priority == 'High' %}border-danger
+                        {% elif task.priority == 'Medium' %}border-warning
+                        {% else %}border-success{% endif %}">
+                        <div class="card-body p-2">
+                            <h6 class="fw-bold mb-1">{{ task.title }}</h6>
+                            <p class="text-muted small mb-1">{{ task.description }}</p>
+                            <p class="small mb-1">📅 {{ task.due_date }}</p>
+                            <p class="small mb-2">🏷️ {{ task.category }} | ⚡ {{ task.priority }}</p>
+                            <div class="d-flex gap-1 flex-wrap">
+                                <a href="/move/{{ task.id }}/backward" class="btn btn-sm btn-outline-secondary">◀ Back</a>
+                                <a href="/move/{{ task.id }}/forward" class="btn btn-sm btn-outline-primary">▶ Move</a>
+                                <a href="/edit/{{ task.id }}" class="btn btn-sm btn-outline-secondary">✏️ Edit</a>
+                                <a href="/delete/{{ task.id }}" class="btn btn-sm btn-outline-danger">🗑</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No tasks yet</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Done Column -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white fw-bold">
+                    ✅ Done <span class="badge bg-white text-success ms-2">{{ done|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% for task in done %}
+                    <div class="card mb-3 border-start border-4
+                        {% if task.priority == 'High' %}border-danger
+                        {% elif task.priority == 'Medium' %}border-warning
+                        {% else %}border-success{% endif %}">
+                        <div class="card-body p-2">
+                            <h6 class="fw-bold mb-1 text-decoration-line-through">{{ task.title }}</h6>
+                            <p class="text-muted small mb-1">{{ task.description }}</p>
+                            <p class="small mb-1">📅 {{ task.due_date }}</p>
+                            <p class="small mb-2">🏷️ {{ task.category }} | ⚡ {{ task.priority }}</p>
+                            <div class="d-flex gap-1 flex-wrap">
+                                <a href="/move/{{ task.id }}/backward" class="btn btn-sm btn-outline-secondary">◀ Back</a>
+                                <a href="/edit/{{ task.id }}" class="btn btn-sm btn-outline-secondary">✏️ Edit</a>
+                                <a href="/delete/{{ task.id }}" class="btn btn-sm btn-outline-danger">🗑</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No tasks yet</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

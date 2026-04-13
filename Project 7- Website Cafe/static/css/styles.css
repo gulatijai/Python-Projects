@@ -1,0 +1,23 @@
+body {
+    background-color: #f8f5f0;
+}
+
+.hero {
+    background-color: #2c2c2c;
+    color: white;
+    padding: 100px 0;
+}
+
+.card {
+    border: none;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.navbar-brand {
+    font-size: 1.4rem;
+    font-weight: bold;
+}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}State Analysis{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-2">State Analysis</h2>
+        <p class="text-center text-muted mb-5">Fatal shootings broken down by US state</p>
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <h4 class="fw-bold mb-3">Fatal Shootings by State</h4>
+            <div id="state_chart"></div>
+        </div>
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <h4 class="fw-bold mb-3">Poverty Rate vs Fatal Shootings</h4>
+            <p class="text-muted">Each dot represents a state. Hover for details.</p>
+            <div id="poverty_chart"></div>
+        </div>
+    </div>
+</section>
+
+<script>
+    var state_data = {{ state_chart | safe }};
+    Plotly.newPlot('state_chart', state_data.data, state_data.layout);
+
+    var poverty_data = {{ poverty_chart | safe }};
+    Plotly.newPlot('poverty_chart', poverty_data.data, poverty_data.layout);
+</script>
+{% endblock %}

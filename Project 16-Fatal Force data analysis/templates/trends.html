@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Trends Analysis{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-2">Trends Over Time</h2>
+        <p class="text-center text-muted mb-5">How fatal shootings have changed year by year</p>
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <h4 class="fw-bold mb-3">Fatal Shootings by Year</h4>
+            <div id="year_chart"></div>
+        </div>
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <h4 class="fw-bold mb-3">Weapon Types</h4>
+            <div id="armed_chart"></div>
+        </div>
+    </div>
+</section>
+
+<script>
+    var year_data = {{ year_chart | safe }};
+    Plotly.newPlot('year_chart', year_data.data, year_data.layout);
+
+    var armed_data = {{ armed_chart | safe }};
+    Plotly.newPlot('armed_chart', armed_data.data, armed_data.layout);
+</script>
+{% endblock %}

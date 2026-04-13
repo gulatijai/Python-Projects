@@ -1,0 +1,47 @@
+/* General */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Sections - padding so content breathes */
+section {
+    padding: 80px 0;
+}
+
+/* Hero */
+#hero {
+    background-color: #F5F0E8;
+}
+
+/* About */
+#about {
+    background-color: #ffffff;
+}
+
+/* Projects */
+#projects {
+    background-color: #F5F0E8;
+}
+
+/* Contact */
+#contact {
+    background-color: #ffffff;
+}
+
+/* Links */
+#links {
+    background-color: #F5F0E8;
+}
+
+/* Profile image */
+#hero img {
+    max-width: 350px;
+    border: 5px solid #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Nav */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.4rem;
+}

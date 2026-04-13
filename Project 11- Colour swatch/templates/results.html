@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Color Results{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-5">🎨 Top 10 Colors</h2>
+        <div class="row g-4">
+
+            <!-- Uploaded Image -->
+            <div class="col-lg-5">
+                <div class="card bg-secondary shadow-sm">
+                    <div class="card-header fw-bold">📷 Uploaded Image</div>
+                    <div class="card-body text-center">
+                        <img src="{{ image_path }}" class="img-fluid rounded" alt="Uploaded image">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Color Table -->
+            <div class="col-lg-7">
+                <div class="card bg-secondary shadow-sm">
+                    <div class="card-header fw-bold">🎨 Color Palette</div>
+                    <div class="card-body">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Swatch</th>
+                                    <th>HEX Code</th>
+                                    <th>RGB</th>
+                                    <th>Pixel Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for color in colors %}
+                                <tr>
+                                    <td>
+                                        <div style="width:50px; height:30px; background-color:{{ color.hex }}; border-radius:4px;"></div>
+                                    </td>
+                                    <td>
+                                        <span class="badge" style="background-color:{{ color.hex }}; color: white;">
+                                            {{ color.hex }}
+                                        </span>
+                                    </td>
+                                    <td class="text-muted small">{{ color.rgb }}</td>
+                                    <td class="text-muted small">{{ color.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="text-center mt-3">
+                            <a href="/download" class="btn btn-light">⬇️ Download Palette</a>
+                            <a href="/" class="btn btn-outline-light ms-2">🔄 Upload Another</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

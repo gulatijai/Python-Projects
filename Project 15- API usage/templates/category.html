@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category }} Meals{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="fw-bold mb-4">🍽️ {{ category }} Meals</h2>
+        <div class="row g-4">
+            {% for meal in meals %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a href="/meal/{{ meal.idMeal }}" class="text-decoration-none">
+                    <div class="card bg-secondary h-100 meal-card">
+                        <img src="{{ meal.strMealThumb }}" class="card-img-top" style="height:180px; object-fit:cover;">
+                        <div class="card-body">
+                            <h6 class="card-title fw-bold text-white">{{ meal.strMeal }}</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

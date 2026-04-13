@@ -1,0 +1,68 @@
+/* General */
+body {
+    background-color: #1a1a2e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+/* Table text */
+.table-dark td {
+    color: #ffffff !important;
+    vertical-align: middle;
+}
+
+.table-dark th {
+    color: #adb5bd !important;
+}
+
+/* Color swatch */
+.color-swatch {
+    width: 50px;
+    height: 30px;
+    border-radius: 4px;
+    border: 1px solid #555;
+    display: inline-block;
+}
+
+/* HEX badge */
+.hex-badge {
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: #ffffff !important;
+    text-shadow: 0px 0px 3px rgba(0,0,0,0.8);
+}
+
+/* Upload form */
+.upload-card {
+    background-color: #16213e !important;
+    border-radius: 16px;
+}
+
+/* Buttons */
+.btn-light {
+    font-weight: bold;
+}
+
+/* Footer */
+footer {
+    border-top: 1px solid #333;
+}
+
+/* Image */
+img.img-fluid {
+    max-height: 400px;
+    object-fit: contain;
+}

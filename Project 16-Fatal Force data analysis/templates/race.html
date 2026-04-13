@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Race Analysis{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-2">Race Analysis</h2>
+        <p class="text-center text-muted mb-5">Breakdown of fatal shootings by racial demographics</p>
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <h4 class="fw-bold mb-3">Fatal Shootings by Race</h4>
+            <div id="race_chart"></div>
+        </div>
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+            <h4 class="fw-bold mb-3">Unarmed Victims by Race</h4>
+            <div id="unarmed_chart"></div>
+        </div>
+    </div>
+</section>
+
+ <script>
+    var race_data = {{ race_chart | safe }};
+    Plotly.newPlot('race_chart', race_data.data, race_data.layout);
+
+    var unarmed_data = {{ unarmed_chart | safe }};
+    Plotly.newPlot('unarmed_chart', unarmed_data.data, unarmed_data.layout);
+</script>
+{% endblock %}
