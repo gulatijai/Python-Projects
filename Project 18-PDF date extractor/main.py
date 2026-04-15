@@ -1,111 +1,183 @@
+
 import os
 import re
 from tkinter import filedialog, Tk
 from pypdf import PdfReader
 import openpyxl
+from pathlib import Path
+from datetime import datetime
+import calendar
 
-# folder picker
+# -----------------------------
+# Helpers
+# -----------------------------
+MONTHS = {
+    "jan": 1, "feb": 2, "mar": 3, "apr": 4,
+    "may": 5, "jun": 6, "jul": 7, "aug": 8,
+    "sep": 9, "oct": 10, "nov": 11, "dec": 12
+}
+
+def normalise_date(raw):
+    if not raw or raw == "Not found":
+        return "Not found"
+
+    raw = raw.strip()
+
+    # MM/YYYY
+    if re.fullmatch(r"\d{1,2}/\d{4}", raw):
+        m, y = raw.split("/")
+        return f"{y}-{int(m):02d}"
+
+    # Month YYYY
+    match = re.fullmatch(r"([A-Za-z]+)\s(\d{4})", raw)
+    if match:
+        month = MONTHS.get(match.group(1).lower()[:3])
+        return f"{match.group(2)}-{month:02d}" if month else raw
+
+    return raw
+
+
+def expiry_status(expiry_ym):
+    if expiry_ym in ("Not found", "", None):
+        return "No expiry stated"
+
+    y, m = map(int, expiry_ym.split("-"))
+    last_day = calendar.monthrange(y, m)[1]
+    expiry_date = datetime(y, m, last_day)
+
+    today = datetime.today()
+
+    if expiry_date < today:
+        return "Expired"
+    if (expiry_date - today).days <= 90:
+        return "Expires soon"
+    return "Valid"
+
+
+# -----------------------------
+# Detection logic
+# -----------------------------
+def detect_manufacturer(text, filename):
+    text_u = (text + filename).upper()
+    for brand in ["LAMINEX", "FORMICA", "HIMACS", "HI-MACS"]:
+        if brand in text_u:
+            return brand.replace("HI-MACS", "HIMACS")
+    return "Unknown"
+
+
+def detect_doc_type(text, filename):
+    blob = (text + filename).upper()
+
+    rules = {
+        "Technical Data Sheet (TDS)": ["TECHNICAL DATA", "TDS"],
+        "Safety Data Sheet (SDS)": ["SAFETY DATA", "SDS", "MSDS"],
+        "Warranty": ["WARRANTY"],
+        "Installation Guide": ["INSTALLATION", "FABRICATION"],
+        "Test / Report / Certificate": ["TEST REPORT", "FIRE", "CERTIFICATE", "REPORT"],
+        "Brochure / Flyer": ["BROCHURE", "FLYER"]
+    }
+
+    for doc_type, keys in rules.items():
+        if any(k in blob for k in keys):
+            return doc_type
+
+    return "Other"
+
+
+def extract_product_family(text):
+    # Very lightweight heuristic — safe but useful
+    match = re.search(r"Laminex\s+([A-Z][A-Za-z0-9\+\- ]{3,40})", text)
+    return match.group(1).strip() if match else "Not identified"
+
+
+def extract_version(text, filename):
+    patterns = [
+        r"Version\s*([A-Z0-9\.]+)",
+        r"\bV([0-9]+)\b",
+        r"Rev(?:ision)?\s*([A-Z0-9\.]+)"
+    ]
+    for p in patterns:
+        m = re.search(p, text, re.IGNORECASE)
+        if m:
+            return m.group(1)
+
+    fm = re.search(r"V([0-9]+)", filename, re.IGNORECASE)
+    return fm.group(1) if fm else "Not found"
+
+
+def extract_issue(text):
+    m = re.search(r"Issued\s*:?\s*([A-Za-z]+\s\d{4}|\d{1,2}/\d{4})", text, re.IGNORECASE)
+    return normalise_date(m.group(1)) if m else "Not found"
+
+
+def extract_expiry(text):
+    m = re.search(r"Expiry\s*:?\s*([A-Za-z]+\s\d{4}|\d{1,2}/\d{4})", text, re.IGNORECASE)
+    return normalise_date(m.group(1)) if m else "Not found"
+
+
+# -----------------------------
+# Folder picker
+# -----------------------------
 root = Tk()
 root.withdraw()
 folder_path = filedialog.askdirectory(title="Select PDF Folder")
 
-# setup Excel
+# -----------------------------
+# Excel setup
+# -----------------------------
 wb = openpyxl.Workbook()
 ws = wb.active
-ws.append(['Filename', 'Document Name', 'Test Number', 'Version', 'Issue Date', 'Expiry Date'])
+ws.title = "Laminex Document Register"
+ws.append([
+    "Filename",
+    "Manufacturer",
+    "Product Family",
+    "Document Type",
+    "Version",
+    "Issue Date (YYYY-MM)",
+    "Expiry Date (YYYY-MM)",
+    "Expiry Status",
+])
 
-# regex patterns for dates and versions
-date_patterns = [
-    r'\d{1,2}\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{4}',  # 01 Sep 2023
-    r'(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{4}',            # Sep 2023
-    r'\d{1,2}/\d{4}',                                                          # 03/2021
-    r'\d{1,2}/\d{1,2}/\d{4}',                                                 # 01/09/2023
-    r'\d{4}-\d{2}-\d{2}',                                                     # 2023-09-01
-]
+# -----------------------------
+# Process PDFs
+# -----------------------------
+for filename in sorted(f for f in os.listdir(folder_path) if f.lower().endswith(".pdf")):
+    filepath = Path(folder_path) / filename
+    print(f"Processing {filename}")
 
-version_pattern = r'[Vv]ersion\s*[\d\.]+|[Vv]\s*[\d\.]+'
-
-issue_keywords = ['issued', 'issue date', 'date issued', 'published']
-expiry_keywords = ['expiry', 'expires', 'expiration', 'valid until']
-
-def find_dates(text):
-    found_dates = []
-    for pattern in date_patterns:
-        matches = re.findall(pattern, text, re.IGNORECASE)
-        found_dates.extend(matches)
-    return found_dates
-
-def find_issue_date(text):
-    lines = text.lower().split('\n')
-    for i, line in enumerate(lines):
-        if any(keyword in line for keyword in issue_keywords):
-            # search this line and next line for dates
-            search_text = line + ' ' + (lines[i+1] if i+1 < len(lines) else '')
-            dates = find_dates(search_text)
-            if dates:
-                return dates[0]
-    return 'Not found'
-
-def find_expiry_date(text):
-    lines = text.lower().split('\n')
-    for i, line in enumerate(lines):
-        if any(keyword in line for keyword in expiry_keywords):
-            search_text = line + ' ' + (lines[i+1] if i+1 < len(lines) else '')
-            dates = find_dates(search_text)
-            if dates:
-                return dates[0]
-    return 'Not found'
-
-def find_version(text):
-    match = re.search(version_pattern, text, re.IGNORECASE)
-    return match.group(0) if match else 'Not found'
-
-def find_doc_name(text):
-    # look for common document title patterns
-    title_keywords = ['TEST REPORT', 'TECHNICAL DATA', 'INSTALLATION GUIDE',
-                      'WARRANTY', 'CARE AND MAINTENANCE', 'MATERIAL SAFETY']
-    text_upper = text.upper()
-    for keyword in title_keywords:
-        if keyword in text_upper:
-            return keyword
-    # fallback to first non-empty line
-    lines = [line.strip() for line in text.split('\n') if line.strip()]
-    return lines[0] if lines else 'Not found'
-
-def find_test_number(text):
-    match = re.search(r'Test(?:ing)?\s*Number\s*:?\s*(\S+)', text, re.IGNORECASE)
-    return match.group(1) if match else 'Not found'
-
-# process all PDFs
-pdf_files = [f for f in os.listdir(folder_path) if f.endswith('.pdf')]
-print(f"Found {len(pdf_files)} PDF files")
-
-for filename in pdf_files:
-    print(f"Processing: {filename}")
     try:
-        filepath = os.path.join(folder_path, filename)
         reader = PdfReader(filepath)
+        text = "".join(page.extract_text() or "" for page in reader.pages[:2])
 
-        # extract text from first 2 pages only
-        text = ""
-        for page in reader.pages[:2]:
-            text += page.extract_text() or ""
+        manufacturer = detect_manufacturer(text, filename)
+        doc_type = detect_doc_type(text, filename)
+        product = extract_product_family(text)
+        version = extract_version(text, filename)
+        issue = extract_issue(text)
+        expiry = extract_expiry(text)
+        status = expiry_status(expiry)
 
-        # extract data
-        doc_name = find_doc_name(text)
-        version = find_version(text)
-        issue_date = find_issue_date(text)
-        expiry_date = find_expiry_date(text)
+        ws.append([
+            filename,
+            manufacturer,
+            product,
+            doc_type,
+            version,
+            issue,
+            expiry,
+            status
+        ])
 
-        test_number = find_test_number(text)
-        ws.append([filename, doc_name, test_number, version, issue_date, expiry_date])
-        print(f"  ✅ Done")
+        print("  ✅ Done")
 
     except Exception as e:
-        print(f"  ❌ Error: {e}")
-        ws.append([filename, 'Error', 'Error', 'Error', 'Error'])
+        ws.append([filename, "Error", "Error", "Error", "Error", "Error", "Error", "Error"])
+        print(f"  ❌ {e}")
 
-# save Excel
-output_path = os.path.join(folder_path, 'pdf_dates.xlsx')
-wb.save(output_path)
-print(f"Saved to {output_path}")
+# -----------------------------
+# Save
+# -----------------------------
+output = Path(folder_path) / "laminex_document_register.xlsx"
+wb.save(output)
+print(f"\n✅ Saved to {output}")
